@@ -1,14 +1,13 @@
 $MOD_NAME = "QudUX_v2"
-$ZIP_FILE = "$MOD_NAME.zip"
 $MODS_DIR = "$env:USERPROFILE/AppData/LocalLow/Freehold Games/CavesOfQud/Mods"
+$DEST = "$MODS_DIR/$MOD_NAME"
 
-Write-Host "Zipping source code..."
-Get-ChildItem -Exclude '.git', '.gitignore', '*.zip', 'move-mod.ps1', 'Makefile', 'bin', 'obj' |
-    Compress-Archive -DestinationPath $ZIP_FILE -Force
+$EXCLUDE = @('.git', '.gitignore', '*.zip', 'move-mod.ps1', 'Makefile', 'bin', 'obj')
 
-Write-Host "Moving to $MODS_DIR..."
-Copy-Item $ZIP_FILE "$MODS_DIR/$ZIP_FILE" -Force
+Write-Host "Copying to $DEST..."
+if (Test-Path $DEST) { Remove-Item $DEST -Recurse -Force }
+New-Item -ItemType Directory -Path $DEST | Out-Null
 
-Remove-Item $ZIP_FILE -Force
+Get-ChildItem -Exclude $EXCLUDE | Copy-Item -Destination $DEST -Recurse -Force
 
-Write-Host "Moved $ZIP_FILE to $MODS_DIR"
+Write-Host "Done."
